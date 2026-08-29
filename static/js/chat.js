@@ -222,13 +222,13 @@ newChatButton.addEventListener("click", () => {
       align-items: center;
       gap: 8px;
       padding: 8px 14px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      background: linear-gradient(135deg, #d81b60, #f48fb1);
       color: #fff;
       font-family: 'Segoe UI', 'Sarabun', sans-serif;
       font-size: 13px;
       font-weight: 500;
       border-radius: 999px;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 14px rgba(216, 27, 96, 0.35);
       z-index: 1000;
       letter-spacing: 0.2px;
       user-select: none;
@@ -237,18 +237,15 @@ newChatButton.addEventListener("click", () => {
     .author-badge:hover {
       transform: translateY(-2px);
     }
-    .author-badge .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 6px #22c55e;
+    .author-badge .flower-icon {
+      font-size: 13px;
+      line-height: 1;
     }
   `;
   document.head.appendChild(style);
 
   const badge = document.createElement("div");
   badge.className = "author-badge";
-  badge.innerHTML = `<span class="dot"></span><span>จัดทำโดย Nuntouchaporn Pheanpricha</span>`;
+  badge.innerHTML = `<span class="flower-icon">🌸</span><span>จัดทำโดย Nuntouchaporn Pheanpricha</span>`;
   document.body.appendChild(badge);
 })();
