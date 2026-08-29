@@ -1,886 +1,423 @@
-/* =========================================================
-   LUXURY FLORIST — CHAT ASSISTANT
-   Concept:
-   หรูหรา อบอุ่น เข้มขรึม แบบร้านดอกไม้บูติกระดับพรีเมียม
-   Espresso + Burgundy + Antique Gold + Ivory
-   ========================================================= */
+/* ---------- ตัวแปรกลาง ----------
+   รวมสี/ระยะห่าง/ความโค้งไว้ที่เดียว แทนที่จะกระจายค่าเป็นเลขดิบๆ ทั่วไฟล์
+   ทำให้ปรับโทนสีหรือความหนาแน่นของ UI ทีเดียวได้จากจุดเดียว และเห็นภาพรวมของ
+   ดีไซน์ระบบง่ายกว่าไล่หาทีละ selector
 
-/* ---------- DESIGN TOKENS ---------- */
-
+   ธีมนี้ปรับจากโทนน้ำเงินเดิม เป็นโทน "มัจฉะ" (เขียวมัจฉะ + ครีมนมข้น)
+   เพื่อให้เข้ากับร้าน Florist Matcha */
 :root {
-  /* Main palette */
-  --color-bg: #1b1210;
-  --color-surface: #241815;
-  --color-surface-alt: #2f201b;
+  --color-bg: #101913;
+  --color-surface: #14201a;
+  --color-surface-alt: #1b2b22;
+  --color-border: #223428;
+  --color-border-strong: #35503f;
+  --color-text: #eef3ea;
+  --color-text-muted: #a9baa9;
+  --color-text-faint: #79907e;
+  --color-accent: #5c8a52;
+  --color-accent-bright: #7cb36a;
+  --color-accent-hover: #4d7645;
+  --color-accent-soft: #263c29;
+  --color-danger: #b91c1c;
+  --color-danger-hover: #991b1b;
+  --color-cream: #f4ecd8;
 
-  --color-ink: #f3e6d8;
-  --color-text: #ecdcc9;
-  --color-text-muted: #c4ab8f;
-  --color-text-faint: #8f7860;
-
-  --color-border: #4a382c;
-  --color-border-strong: #6e5238;
-
-  /* สีสันหรูหรา */
-  --color-burgundy: #8f2d3a;
-  --color-burgundy-dark: #5c1a24;
-  --color-gold: #c79a52;
-  --color-gold-light: #e8b96a;
-  --color-rose: #b0475a;
-  --color-ivory: #f3e6d8;
-
-  --color-accent: var(--color-gold);
-  --color-accent-hover: var(--color-gold-light);
-
-  --color-danger: #a1443f;
-  --color-danger-hover: #883732;
-
-  /* Geometry */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-pill: 999px;
-
   --space-sm: 8px;
   --space-md: 16px;
-  --space-lg: 24px;
 
-  --shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.35);
-  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 4px 18px rgba(0, 0, 0, 0.28);
+  --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
-
-
-/* ---------- GLOBAL ---------- */
 
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
-
 body {
   margin: 0;
-
-  font-family:
-    "Kanit",
-    "Noto Sans Thai",
-    "Segoe UI",
-    system-ui,
-    sans-serif;
-
+  /* Kanit ก่อน เพื่อให้ตรงกับฟอนต์หลักที่ใช้สอนเรื่อง UI/UX ในเลกเชอร์
+     Noto Sans Thai / Segoe UI เป็น fallback เผื่อโหลด Kanit จาก Google Fonts ไม่สำเร็จ */
+  font-family: "Kanit", "Noto Sans Thai", "Segoe UI", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(124, 179, 106, 0.16), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(92, 138, 82, 0.12), transparent 50%),
+    var(--color-bg);
   color: var(--color-text);
-
   height: 100vh;
   overflow: hidden;
-
-  /* พื้นหลังหรูหราโทนเข้มอบอุ่น ทำด้วย CSS gradient ล้วนๆ
-     ไม่ต้องพึ่งไฟล์ภาพภายนอก จึงไม่มีปัญหาไฟล์หายหรือ path ผิด */
-  background-color: var(--color-bg);
-  background-image:
-    radial-gradient(
-      circle at 82% 15%,
-      rgba(232, 185, 106, 0.16) 0%,
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 15% 85%,
-      rgba(143, 45, 58, 0.22) 0%,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 12% 20%,
-      rgba(199, 154, 82, 0.08) 0%,
-      transparent 26%
-    ),
-    radial-gradient(
-      circle at 88% 82%,
-      rgba(176, 71, 90, 0.14) 0%,
-      transparent 30%
-    ),
-    linear-gradient(160deg, #1f1512 0%, #150e0c 60%, #100b09 100%);
-
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 
-
-/* =========================================================
-   MAIN APPLICATION
-   ========================================================= */
-
+/* ---------- layout: เขียนแบบ mobile-first ----------
+   ค่าเริ่มต้น (ไม่มี media query) คือสไตล์สำหรับจอเล็ก/มือถือ
+   แล้วค่อยขยาย/ปรับเพิ่มให้จอใหญ่ขึ้นด้วย @media (min-width: ...) ด้านล่าง */
 .app-container {
-  position: relative;
-
   display: flex;
   flex-direction: column;
-
   height: 100vh;
   width: 100%;
-
   margin: 0 auto;
-
-  background: rgba(27, 18, 16, 0.88);
-
-  backdrop-filter: blur(16px);
-
-  border-left: 1px solid rgba(199, 154, 82, 0.18);
-  border-right: 1px solid rgba(199, 154, 82, 0.18);
-
-  box-shadow: var(--shadow-card);
-
-  overflow: hidden;
+  background: var(--color-surface);
+  position: relative;
 }
-
-
-/* ---------- เส้นทองตกแต่งมุมจอ ---------- */
-
-.app-container::before {
-  content: "";
-
-  position: absolute;
-
-  width: 260px;
-  height: 260px;
-
-  top: -160px;
-  right: -80px;
-
-  border-radius: 50%;
-
-  background: radial-gradient(
-    circle,
-    var(--color-gold-light) 0%,
-    transparent 70%
-  );
-
-  opacity: 0.18;
-
-  pointer-events: none;
-}
-
-.app-container::after {
-  content: "";
-
-  position: absolute;
-
-  width: 180px;
-  height: 180px;
-
-  bottom: -100px;
-  left: -60px;
-
-  border-radius: 50%;
-
-  background: radial-gradient(
-    circle,
-    var(--color-burgundy) 0%,
-    transparent 70%
-  );
-
-  opacity: 0.25;
-
-  pointer-events: none;
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
 
 .app-header {
-  position: relative;
-  z-index: 2;
-
-  padding: 20px 24px;
-
+  padding: 16px var(--space-md);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: var(--space-md);
-
-  background: linear-gradient(
-    90deg,
-    rgba(199, 154, 82, 0.1),
-    rgba(143, 45, 58, 0.1)
-  );
-
-  border-bottom: 1px solid var(--color-border);
-}
-
-
-/* เส้นทองบางๆ แทนขีดเหลี่ยมเดิม */
-
-.app-header::before {
-  content: "";
-
-  width: 3px;
-  height: 30px;
-
-  background: linear-gradient(
-    180deg,
-    var(--color-gold-light),
-    var(--color-burgundy)
-  );
-
-  position: absolute;
-  left: 0;
-  top: 50%;
-
-  transform: translateY(-50%);
+  gap: var(--space-sm);
+  background: linear-gradient(180deg, rgba(124, 179, 106, 0.1), transparent);
+  backdrop-filter: blur(6px);
 }
 
 .app-header-text {
   display: flex;
-  flex-direction: column;
-
-  gap: 3px;
-
+  align-items: center;
+  gap: 10px;
   min-width: 0;
-
-  padding-left: 18px;
 }
 
+.app-header-text::before {
+  content: "🍵";
+  font-size: 1.3rem;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.app-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 
 .app-header h1 {
   margin: 0;
-
   font-size: 1.15rem;
   font-weight: 600;
-
-  letter-spacing: 0.4px;
-
-  color: var(--color-ivory);
+  letter-spacing: 0.2px;
+  background: linear-gradient(90deg, var(--color-accent-bright), var(--color-cream));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-
 
 .app-subtitle {
-  font-size: 0.76rem;
-
+  font-size: 0.78rem;
   color: var(--color-text-muted);
-
-  letter-spacing: 0.3px;
 }
-
-
-/* =========================================================
-   NEW CHAT BUTTON
-   ========================================================= */
 
 .new-chat-button {
   flex: 0 0 auto;
-
   padding: 8px 16px;
-
   border-radius: var(--radius-pill);
-
   border: 1px solid var(--color-border-strong);
-
-  background: rgba(255, 255, 255, 0.03);
-
+  background: transparent;
   color: var(--color-text-muted);
-
   font-family: inherit;
-  font-size: 0.78rem;
-
+  font-size: 0.8rem;
   cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
-
 .new-chat-button:hover {
-  background: rgba(199, 154, 82, 0.1);
-
-  border-color: var(--color-gold);
-
-  color: var(--color-gold-light);
-
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-text);
   transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   CHAT WINDOW
-   ========================================================= */
-
 .chat-window {
-  position: relative;
-  z-index: 1;
-
   flex: 1;
-
   overflow-y: auto;
-
-  padding: 24px;
-
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-
-  gap: 14px;
-
+  gap: 10px;
   scroll-behavior: smooth;
 }
 
-
-/* Custom scrollbar */
-
 .chat-window::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
 }
 
 .chat-window::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.chat-window::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
-
-  border-radius: 999px;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
+/* ---------- empty state ----------
+   แสดงเฉพาะตอนที่ยังไม่มีบทสนทนาจริงเกิดขึ้นเลย ไม่ใช่ข้อความ AI ปลอมที่ค้างอยู่ถาวร
+   ถูกซ่อนทันทีที่ผู้ใช้ส่งข้อความแรก และถูกเรียกกลับมาแสดงอีกครั้งตอนกด "เริ่มใหม่" */
 .empty-state {
   flex: 1;
-
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-
+  gap: 10px;
   text-align: center;
-
-  color: var(--color-text-muted);
-
+  color: var(--color-text-faint);
   font-size: 0.95rem;
-
-  padding: 30px;
-
-  position: relative;
+  padding: 24px;
 }
-
-
-/* วงแหวนทองประดับตรงกลาง */
 
 .empty-state::before {
-  content: "";
-
-  position: absolute;
-
-  width: 120px;
-  height: 120px;
-
-  border-radius: 50%;
-
-  border: 1px solid rgba(199, 154, 82, 0.35);
-
-  box-shadow: inset 0 0 0 8px rgba(199, 154, 82, 0.06);
-
-  z-index: -1;
+  content: "🌿";
+  font-size: 2.2rem;
+  opacity: 0.85;
 }
-
 
 .empty-state.hidden {
   display: none;
 }
 
-
-/* =========================================================
-   MESSAGE
-   ========================================================= */
-
 .message {
   display: flex;
-
-  max-width: 88%;
-
-  animation: messageIn 0.25s ease both;
+  max-width: 92%;
+  animation: rise 0.2s ease;
 }
 
-
-@keyframes messageIn {
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(6px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-
 .message.user {
   align-self: flex-end;
-
   justify-content: flex-end;
 }
-
 
 .message.ai {
   align-self: flex-start;
 }
 
-
-/* =========================================================
-   CHAT BUBBLE
-   ========================================================= */
-
 .bubble {
-  padding: 12px 16px;
-
+  padding: 11px 15px;
   border-radius: var(--radius-lg);
-
-  line-height: 1.65;
-
+  line-height: 1.55;
   white-space: pre-wrap;
-
   word-break: break-word;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-soft);
 }
-
-
-/* USER */
 
 .message.user .bubble {
-  background: linear-gradient(135deg, var(--color-burgundy), var(--color-burgundy-dark));
-
-  color: var(--color-ivory);
-
-  border: 1px solid rgba(199, 154, 82, 0.25);
-
-  border-bottom-right-radius: 6px;
+  background: linear-gradient(135deg, var(--color-accent-bright), var(--color-accent));
+  color: #0e160f;
+  border-bottom-right-radius: 4px;
 }
-
-
-/* AI */
 
 .message.ai .bubble {
-  background: rgba(255, 255, 255, 0.04);
-
+  background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
-
-  color: var(--color-text);
-
-  border-bottom-left-radius: 6px;
+  border-bottom-left-radius: 4px;
 }
-
-
-/* =========================================================
-   MARKDOWN / CODE
-   ========================================================= */
 
 .bubble code {
-  background: rgba(199, 154, 82, 0.15);
-
-  color: var(--color-gold-light);
-
-  padding: 2px 6px;
-
-  border-radius: 5px;
-
-  font-family:
-    "Cascadia Code",
-    "SFMono-Regular",
-    Consolas,
-    monospace;
-
-  font-size: 0.88em;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.9em;
 }
-
 
 .bubble pre {
-  background: #100b09;
-
-  color: var(--color-ivory);
-
-  padding: 12px 14px;
-
-  border-radius: 10px;
-
+  background: rgba(0, 0, 0, 0.35);
+  padding: 10px;
+  border-radius: var(--radius-sm);
   overflow-x: auto;
-
-  border-left: 3px solid var(--color-gold);
 }
-
 
 .bubble pre code {
   background: none;
-
-  color: inherit;
-
   padding: 0;
 }
 
-
 .bubble ul,
 .bubble ol {
-  margin: 7px 0;
-
+  margin: 6px 0;
   padding-left: 22px;
 }
 
-
 .bubble strong {
-  color: var(--color-gold-light);
+  color: #dff2d8;
 }
 
-
+/* ข้อความในฟองแชทของผู้ใช้ใช้พื้นหลังสว่าง (มัจฉะ) ตัวอักษรหลักเป็นสีเข้มอยู่แล้ว
+   จึงปรับ strong ให้เข้มกว่าตัวหนังสือปกติเล็กน้อยเพื่อความคมชัด แทนสีอ่อนแบบเดิม */
 .message.user .bubble strong {
-  color: #fbe3ca;
+  color: #06210a;
 }
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
 
 .loading-indicator {
   display: flex;
-
-  gap: 5px;
-
+  gap: 4px;
   padding: 10px 14px;
-
   align-self: flex-start;
 }
-
 
 .loading-indicator.hidden {
   display: none;
 }
 
-
 .loading-indicator .dot {
   width: 7px;
   height: 7px;
-
   border-radius: 50%;
-
-  background: var(--color-gold);
-
+  background: var(--color-accent-bright);
   animation: bounce 1.2s infinite ease-in-out;
 }
 
-
 .loading-indicator .dot:nth-child(2) {
-  background: var(--color-burgundy);
-
   animation-delay: 0.15s;
 }
 
-
 .loading-indicator .dot:nth-child(3) {
-  background: var(--color-gold-light);
-
   animation-delay: 0.3s;
 }
 
-
 @keyframes bounce {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
-    opacity: 0.4;
+    opacity: 0.5;
   }
-
   30% {
     transform: translateY(-6px);
     opacity: 1;
   }
 }
 
-
-/* =========================================================
-   ERROR / NOTICE
-   ========================================================= */
-
 .error-banner {
-  margin: 0 var(--space-lg) var(--space-sm);
-
+  margin: 0 var(--space-md) var(--space-sm);
   padding: 10px 14px;
-
-  background: rgba(161, 68, 63, 0.18);
-
-  color: #eec6bf;
-
-  border: 1px solid rgba(161, 68, 63, 0.4);
-
+  background: #7f1d1d;
+  color: #fecaca;
   border-radius: var(--radius-sm);
-
-  font-size: 0.88rem;
-
+  font-size: 0.9rem;
   transition: opacity 0.15s ease;
 }
-
 
 .error-banner.hidden {
   display: none;
 }
 
-
+/* ตัวแปรสถานะ "แจ้งให้ทราบเฉยๆ" (เช่น กด "หยุด" การตอบเอง) แยกโทนจาก error จริง
+   ใช้ element เดียวกับ error-banner แค่สลับคลาส เพื่อไม่ต้องเพิ่ม DOM ซ้ำซ้อน */
 .error-banner.notice {
-  background: rgba(199, 154, 82, 0.12);
-
-  color: var(--color-gold-light);
-
-  border-color: rgba(199, 154, 82, 0.35);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
 }
-
-
-/* =========================================================
-   CHAT FORM
-   ========================================================= */
 
 .chat-form {
-  position: relative;
-  z-index: 3;
-
   display: flex;
-
-  gap: 10px;
-
-  padding: 16px 22px 20px;
-
+  gap: var(--space-sm);
+  padding: 14px var(--space-md) 18px;
   border-top: 1px solid var(--color-border);
-
-  background: rgba(27, 18, 16, 0.92);
-
-  backdrop-filter: blur(15px);
+  background: linear-gradient(0deg, rgba(124, 179, 106, 0.07), transparent);
 }
-
-
-/* =========================================================
-   MESSAGE INPUT
-   ========================================================= */
 
 .message-input {
   flex: 1;
-
   padding: 12px 16px;
-
   border-radius: var(--radius-pill);
-
   border: 1px solid var(--color-border-strong);
-
-  background: rgba(255, 255, 255, 0.03);
-
+  background: var(--color-surface-alt);
   color: var(--color-text);
-
   font-family: inherit;
-
-  font-size: 0.95rem;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
+  font-size: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
 
 .message-input::placeholder {
   color: var(--color-text-faint);
 }
 
-
 .message-input:focus {
   outline: none;
-
-  border-color: var(--color-gold);
-
-  background: rgba(255, 255, 255, 0.05);
-
-  box-shadow: 0 0 0 3px rgba(199, 154, 82, 0.15);
+  border-color: var(--color-accent-bright);
+  box-shadow: 0 0 0 3px rgba(124, 179, 106, 0.2);
 }
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
 
 .send-button,
 .stop-button {
   min-width: 76px;
-
   padding: 0 var(--space-md);
-
   border-radius: var(--radius-pill);
-
   border: none;
-
   font-family: inherit;
-
-  font-size: 0.9rem;
-
+  font-weight: 500;
+  font-size: 1rem;
   cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
 }
-
-
-/* SEND */
 
 .send-button {
-  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
-
-  color: #2a1c12;
-
-  font-weight: 600;
-
-  box-shadow: 0 4px 14px rgba(199, 154, 82, 0.35);
+  background: linear-gradient(135deg, var(--color-accent-bright), var(--color-accent));
+  color: #0e160f;
+  box-shadow: var(--shadow-soft);
 }
-
-
-.send-button:not(:disabled):hover {
-  transform: translateY(-1px);
-
-  box-shadow: 0 6px 18px rgba(199, 154, 82, 0.45);
-}
-
 
 .send-button:disabled {
   background: var(--color-border-strong);
-
-  color: #b8a690;
-
-  cursor: not-allowed;
-
+  color: var(--color-text-faint);
   box-shadow: none;
+  cursor: not-allowed;
 }
 
-
-/* STOP */
-
-.stop-button {
-  background: var(--color-danger);
-
-  color: var(--color-ivory);
-}
-
-
-.stop-button:hover {
-  background: var(--color-danger-hover);
-
+.send-button:not(:disabled):hover {
+  filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
+.stop-button {
+  background: var(--color-danger);
+  color: white;
+}
+
+.stop-button:hover {
+  background: var(--color-danger-hover);
+  transform: translateY(-1px);
+}
 
 .stop-button.hidden,
 .send-button.hidden {
   display: none;
 }
 
+.footer-credit {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+  padding-bottom: 10px;
+}
 
-/* =========================================================
-   DESKTOP
-   ========================================================= */
-
+/* ---------- จอที่ใหญ่ขึ้น (แท็บเล็ต/เดสก์ท็อป) ---------- */
 @media (min-width: 600px) {
-
   .app-container {
-    max-width: 920px;
-
-    margin: 20px auto;
-
-    height: calc(100vh - 40px);
-
-    border-radius: 20px;
-
-    overflow: hidden;
+    max-width: 720px;
+    box-shadow: var(--shadow-lift);
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
   }
 
   .message {
-    max-width: 78%;
-  }
-
-  .app-header {
-    padding: 22px 28px;
-  }
-
-  .chat-window {
-    padding: 28px 32px;
-  }
-
-  .chat-form {
-    padding: 18px 26px 22px;
-  }
-}
-
-
-/* =========================================================
-   LARGE DESKTOP
-   ========================================================= */
-
-@media (min-width: 1100px) {
-
-  .app-container {
-    max-width: 1050px;
-  }
-
-  .chat-window {
-    padding-left: 55px;
-    padding-right: 55px;
-  }
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 599px) {
-
-  .app-container {
-    border-radius: 0;
-  }
-
-  .chat-window {
-    padding: 18px 14px;
-  }
-
-  .chat-form {
-    padding: 12px;
-  }
-
-  .message {
-    max-width: 94%;
-  }
-
-  .send-button,
-  .stop-button {
-    min-width: 62px;
-  }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
+    max-width: 85%;
   }
 }
