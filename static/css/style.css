@@ -3,24 +3,25 @@
    ทำให้ปรับโทนสีหรือความหนาแน่นของ UI ทีเดียวได้จากจุดเดียว และเห็นภาพรวมของ
    ดีไซน์ระบบง่ายกว่าไล่หาทีละ selector
 
-   ธีมนี้ปรับจากโทนน้ำเงินเดิม เป็นโทน "มัจฉะ" (เขียวมัจฉะ + ครีมนมข้น)
-   เพื่อให้เข้ากับร้าน Florist Matcha */
+   ธีมนี้เป็นโทน "มัจฉะลาเต้" (matcha latte): พื้นหลังครีมนม ผสมเขียวมัจฉะนวลๆ
+   ต่างจากธีมเขียวเข้มแบบใบชาล้วน ให้ความรู้สึกอบอุ่น สว่าง เข้ากับเครื่องดื่มลาเต้ */
 :root {
-  --color-bg: #101913;
-  --color-surface: #14201a;
-  --color-surface-alt: #1b2b22;
-  --color-border: #223428;
-  --color-border-strong: #35503f;
-  --color-text: #eef3ea;
-  --color-text-muted: #a9baa9;
-  --color-text-faint: #79907e;
-  --color-accent: #5c8a52;
-  --color-accent-bright: #7cb36a;
-  --color-accent-hover: #4d7645;
-  --color-accent-soft: #263c29;
-  --color-danger: #b91c1c;
-  --color-danger-hover: #991b1b;
-  --color-cream: #f4ecd8;
+  --color-bg: #f8f3e7;
+  --color-surface: #fffdf7;
+  --color-surface-alt: #f1ead9;
+  --color-border: #e6dcc4;
+  --color-border-strong: #d3c49f;
+  --color-text: #3c3323;
+  --color-text-muted: #7a6f56;
+  --color-text-faint: #a89a78;
+  --color-accent: #8ba888;
+  --color-accent-bright: #a9c49a;
+  --color-accent-hover: #799677;
+  --color-accent-soft: #e7edd9;
+  --color-danger: #c0392b;
+  --color-danger-hover: #a53225;
+  --color-cream: #fff8ea;
+  --color-matcha-deep: #4c6b45;
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -29,8 +30,8 @@
   --space-sm: 8px;
   --space-md: 16px;
 
-  --shadow-soft: 0 4px 18px rgba(0, 0, 0, 0.28);
-  --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 4px 16px rgba(140, 120, 70, 0.14);
+  --shadow-lift: 0 10px 28px rgba(140, 120, 70, 0.18);
 }
 
 * {
@@ -43,8 +44,8 @@ body {
      Noto Sans Thai / Segoe UI เป็น fallback เผื่อโหลด Kanit จาก Google Fonts ไม่สำเร็จ */
   font-family: "Kanit", "Noto Sans Thai", "Segoe UI", system-ui, sans-serif;
   background:
-    radial-gradient(circle at 15% 0%, rgba(124, 179, 106, 0.16), transparent 45%),
-    radial-gradient(circle at 100% 100%, rgba(92, 138, 82, 0.12), transparent 50%),
+    radial-gradient(circle at 15% 0%, rgba(169, 196, 154, 0.28), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(233, 214, 168, 0.35), transparent 50%),
     var(--color-bg);
   color: var(--color-text);
   height: 100vh;
@@ -71,7 +72,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
-  background: linear-gradient(180deg, rgba(124, 179, 106, 0.1), transparent);
+  background: linear-gradient(180deg, rgba(169, 196, 154, 0.18), transparent);
   backdrop-filter: blur(6px);
 }
 
@@ -86,7 +87,7 @@ body {
   content: "🍵";
   font-size: 1.3rem;
   flex: 0 0 auto;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 3px rgba(140, 120, 70, 0.25));
 }
 
 .app-header-title {
@@ -101,7 +102,7 @@ body {
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.2px;
-  background: linear-gradient(90deg, var(--color-accent-bright), var(--color-cream));
+  background: linear-gradient(90deg, var(--color-matcha-deep), var(--color-accent));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -117,7 +118,7 @@ body {
   padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-strong);
-  background: transparent;
+  background: var(--color-surface);
   color: var(--color-text-muted);
   font-family: inherit;
   font-size: 0.8rem;
@@ -128,7 +129,7 @@ body {
 .new-chat-button:hover {
   background: var(--color-accent-soft);
   border-color: var(--color-accent);
-  color: var(--color-text);
+  color: var(--color-matcha-deep);
   transform: translateY(-1px);
 }
 
@@ -174,7 +175,7 @@ body {
 .empty-state::before {
   content: "🌿";
   font-size: 2.2rem;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .empty-state.hidden {
@@ -218,18 +219,19 @@ body {
 
 .message.user .bubble {
   background: linear-gradient(135deg, var(--color-accent-bright), var(--color-accent));
-  color: #0e160f;
+  color: #22331f;
   border-bottom-right-radius: 4px;
 }
 
 .message.ai .bubble {
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
+  color: var(--color-text);
   border-bottom-left-radius: 4px;
 }
 
 .bubble code {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(76, 107, 69, 0.12);
   padding: 1px 5px;
   border-radius: 4px;
   font-family: "Cascadia Code", Consolas, monospace;
@@ -237,7 +239,7 @@ body {
 }
 
 .bubble pre {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(76, 107, 69, 0.1);
   padding: 10px;
   border-radius: var(--radius-sm);
   overflow-x: auto;
@@ -255,13 +257,13 @@ body {
 }
 
 .bubble strong {
-  color: #dff2d8;
+  color: var(--color-matcha-deep);
 }
 
-/* ข้อความในฟองแชทของผู้ใช้ใช้พื้นหลังสว่าง (มัจฉะ) ตัวอักษรหลักเป็นสีเข้มอยู่แล้ว
-   จึงปรับ strong ให้เข้มกว่าตัวหนังสือปกติเล็กน้อยเพื่อความคมชัด แทนสีอ่อนแบบเดิม */
+/* ข้อความในฟองแชทของผู้ใช้ใช้พื้นหลังเขียวอ่อนสว่าง ตัวอักษรหลักเป็นสีเข้มอยู่แล้ว
+   จึงปรับ strong ให้เข้มกว่าตัวหนังสือปกติเล็กน้อยเพื่อความคมชัด */
 .message.user .bubble strong {
-  color: #06210a;
+  color: #16220f;
 }
 
 .loading-indicator {
@@ -279,7 +281,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--color-accent-bright);
+  background: var(--color-accent);
   animation: bounce 1.2s infinite ease-in-out;
 }
 
@@ -307,8 +309,8 @@ body {
 .error-banner {
   margin: 0 var(--space-md) var(--space-sm);
   padding: 10px 14px;
-  background: #7f1d1d;
-  color: #fecaca;
+  background: #fbe4e1;
+  color: #8a2e22;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   transition: opacity 0.15s ease;
@@ -330,7 +332,7 @@ body {
   gap: var(--space-sm);
   padding: 14px var(--space-md) 18px;
   border-top: 1px solid var(--color-border);
-  background: linear-gradient(0deg, rgba(124, 179, 106, 0.07), transparent);
+  background: linear-gradient(0deg, rgba(169, 196, 154, 0.12), transparent);
 }
 
 .message-input {
@@ -338,7 +340,7 @@ body {
   padding: 12px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-alt);
+  background: var(--color-surface);
   color: var(--color-text);
   font-family: inherit;
   font-size: 1rem;
@@ -351,8 +353,8 @@ body {
 
 .message-input:focus {
   outline: none;
-  border-color: var(--color-accent-bright);
-  box-shadow: 0 0 0 3px rgba(124, 179, 106, 0.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(139, 168, 136, 0.22);
 }
 
 .send-button,
@@ -370,19 +372,19 @@ body {
 
 .send-button {
   background: linear-gradient(135deg, var(--color-accent-bright), var(--color-accent));
-  color: #0e160f;
+  color: #1c2a19;
   box-shadow: var(--shadow-soft);
 }
 
 .send-button:disabled {
   background: var(--color-border-strong);
-  color: var(--color-text-faint);
+  color: var(--color-surface);
   box-shadow: none;
   cursor: not-allowed;
 }
 
 .send-button:not(:disabled):hover {
-  filter: brightness(1.08);
+  filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
